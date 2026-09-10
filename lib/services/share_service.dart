@@ -21,12 +21,10 @@ class ShareService {
   /// Ouvre la feuille de partage native avec le PDF déjà sélectionné :
   /// l'utilisateur choisit WhatsApp (ou une autre appli) dans la liste.
   static Future<void> sharePdf(File file, {required String subject}) async {
-    await SharePlus.instance.share(
-      ShareParams(
-        files: [XFile(file.path)],
-        subject: subject,
-        text: subject,
-      ),
+    await Share.shareXFiles(
+      [XFile(file.path)],
+      subject: subject,
+      text: subject,
     );
   }
 
