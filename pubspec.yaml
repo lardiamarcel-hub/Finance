@@ -1,0 +1,42 @@
+name: devis_sap_sap
+description: "Devis Sap Sap - devis et factures faciles pour commerçants et artisans."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # État de l'application (simple, sans code-gen)
+  provider: ^6.1.2
+
+  # Génération et partage de PDF
+  pdf: ^3.11.1
+  printing: ^5.13.1
+
+  # Partage (WhatsApp, etc.) et liens (SMS, appel)
+  share_plus: ^10.1.2
+  url_launcher: ^6.3.1
+
+  # Stockage local (mode hors-ligne)
+  shared_preferences: ^2.3.2
+  path_provider: ^2.1.4
+
+  # Utilitaires
+  uuid: ^4.5.1
+  image_picker: ^1.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
