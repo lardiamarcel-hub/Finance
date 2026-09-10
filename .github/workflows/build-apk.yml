@@ -1,13 +1,18 @@
 name: Build Android APK
 
-# Génère l'APK Android de Devis Sap Sap.
-# - Sur un tag "vX.Y.Z" : build + publication d'une Release GitHub avec l'APK joint.
-# - Manuellement (workflow_dispatch) : build + artifact téléchargeable, sans release.
+# Génère l'APK Android de Devis Sap Sap et publie une Release GitHub avec
+# l'APK joint : sur un tag "vX.Y.Z", ou manuellement (workflow_dispatch,
+# utile quand on ne peut pas pousser de tag directement).
 on:
   push:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Nom de la version publiée (ex: v0.1.0)'
+        required: true
+        default: 'v0.1.0'
 
 permissions:
   contents: write
@@ -42,11 +47,19 @@ jobs:
       - name: Build release APK
         run: flutter build apk --release
 
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Prepare APK for upload
         run: |
           mkdir -p dist
-          version="${GITHUB_REF_NAME:-dev-$GITHUB_RUN_NUMBER}"
-          cp build/app/outputs/flutter-apk/app-release.apk "dist/devis-sap-sap-${version}.apk"
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/devis-sap-sap-${{ steps.version.outputs.tag }}.apk"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -55,9 +68,9 @@ jobs:
           path: dist/*.apk
 
       - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.version.outputs.tag }}
           files: dist/*.apk
-          name: Devis Sap Sap ${{ github.ref_name }}
+          name: Devis Sap Sap ${{ steps.version.outputs.tag }}
           generate_release_notes: true
