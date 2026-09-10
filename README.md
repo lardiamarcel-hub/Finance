@@ -41,8 +41,8 @@ lib/
                                  sélecteur de quantité +/-, montant en gros, avatar initiale,
                                  bottom sheet "nouveau client")
   screens/
-    auth/login_screen.dart              Connexion (téléphone + code SMS)
-    onboarding/company_setup_screen.dart Fiche entreprise (1ère fois, puis modifiable)
+    onboarding/company_setup_screen.dart Fiche entreprise (1ère fois, puis modifiable) —
+                                          premier écran tant qu'aucun compte n'est branché
     home/home_screen.dart               Accueil : devis récents + actions principales
     devis/
       devis_wizard_screen.dart          Parcours en 4 étapes (voir plus bas)
@@ -81,11 +81,14 @@ assets/images/                          Logos/photos (vide pour l'instant)
    information déjà connue.
 6. **Résumé des ventes, paramètres et aide** — 3 chiffres clairs, fiche
    entreprise modifiable, écran d'aide illustré.
-7. **Écrans de connexion/configuration** et branchement dans `main.dart`.
+7. **Écran de configuration** et branchement dans `main.dart` : au premier
+   lancement, l'app va directement à la fiche entreprise, puis à l'accueil —
+   pas d'écran de connexion pour l'instant, pour pouvoir tester librement.
 8. **Firebase (Auth téléphone + Firestore + synchro hors-ligne)** — pas
    encore fait. C'est la prochaine étape : brancher `AppRepository` sur
    Firestore (avec la persistance offline de Firestore activée) derrière la
-   même interface, pour ne pas avoir à retoucher les écrans.
+   même interface, et ajouter un écran de connexion (téléphone + SMS) sans
+   retoucher le reste des écrans.
 
 ### Explication simple de ce qui a été construit
 
@@ -100,14 +103,16 @@ assets/images/                          Logos/photos (vide pour l'instant)
 - **Le suivi** : chaque devis a une pastille de couleur (jaune = en
   attente, vert = accepté/payé, rouge = refusé), visible sans avoir à lire
   de texte.
-- **Ce qui reste à faire** : brancher un vrai compte (numéro de téléphone +
-  code SMS réel) et synchroniser les données entre plusieurs appareils via
-  Firebase — pour l'instant tout reste local à l'appareil.
+- **Ce qui reste à faire** : ajouter un vrai compte (numéro de téléphone +
+  code SMS) et synchroniser les données entre plusieurs appareils via
+  Firebase — pour l'instant tout reste local à l'appareil, sans connexion à
+  faire pour commencer à tester.
 
 ## Ce qui n'est pas encore branché
 
-- L'authentification par SMS est simulée (n'importe quel code est accepté)
-  en attendant Firebase Auth.
+- Pas d'écran de connexion : l'app s'ouvre directement sur la fiche
+  entreprise (1ère fois) puis l'accueil, pour tester sans friction avant la
+  mise en œuvre de Firebase Auth (téléphone + SMS).
 - Il n'y a pas encore de synchronisation multi-appareils : les données
   restent sur le téléphone (ce qui correspond déjà au mode hors-ligne
   demandé, juste sans la synchronisation en plus).

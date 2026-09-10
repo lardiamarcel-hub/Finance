@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'data/app_repository.dart';
-import 'screens/auth/login_screen.dart';
+import 'screens/home/home_screen.dart';
+import 'screens/onboarding/company_setup_screen.dart';
 import 'utils/app_theme.dart';
 
 void main() {
@@ -29,7 +30,9 @@ class DevisSapSapApp extends StatelessWidget {
 }
 
 /// Attend que le repository ait fini de charger les données locales
-/// (mode hors-ligne) avant d'afficher le premier écran.
+/// (mode hors-ligne) avant d'afficher le premier écran. Pas d'écran de
+/// connexion pour l'instant : on va directement à la configuration de
+/// l'entreprise (première fois) ou à l'accueil.
 class _StartupGate extends StatelessWidget {
   const _StartupGate();
 
@@ -41,6 +44,6 @@ class _StartupGate extends StatelessWidget {
         body: Center(child: CircularProgressIndicator(color: AppColors.orange)),
       );
     }
-    return const LoginScreen();
+    return repo.company.isConfigured ? const HomeScreen() : const CompanySetupScreen();
   }
 }
