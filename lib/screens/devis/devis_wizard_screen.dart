@@ -5,10 +5,12 @@ import '../../data/app_repository.dart';
 import '../../models/client.dart';
 import '../../models/devis.dart';
 import '../../models/devis_item.dart';
+import '../../services/ai_devis_service.dart';
 import '../../services/pdf_service.dart';
 import '../../services/share_service.dart';
 import '../../utils/app_theme.dart';
 import '../../utils/currency_formatter.dart';
+import 'ai_devis_sheet.dart';
 import 'devis_sent_screen.dart';
 import 'steps/client_step.dart';
 import 'steps/items_step.dart';
@@ -69,6 +71,18 @@ class _DevisWizardScreenState extends State<DevisWizardScreen> {
 
   void _removeItem(String productId) {
     setState(() => _items.removeWhere((i) => i.productId == productId));
+  }
+
+  Future<void> _openAiSheet() async {
+    final result = await showAiDevisSheet(context);
+    if (result == null || !mounted) return;
+    setState(() {
+      _selectedClient = result.client;
+      _items
+        ..clear()
+        ..addAll(result.items);
+    });
+    _goToStep(2);
   }
 
   Future<Devis> _ensureDevisCreated() async {
@@ -158,6 +172,14 @@ class _DevisWizardScreenState extends State<DevisWizardScreen> {
           icon: const Icon(Icons.close_rounded),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        actions: [
+          if (_step == 0 && AiDevisService.isAvailable)
+            IconButton(
+              icon: const Icon(Icons.auto_awesome_rounded),
+              tooltip: "Décrire avec l'IA",
+              onPressed: _openAiSheet,
+            ),
+        ],
       ),
       body: Column(
         children: [

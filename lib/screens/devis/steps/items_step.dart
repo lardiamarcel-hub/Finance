@@ -23,6 +23,61 @@ class ItemsStep extends StatelessWidget {
 
   double get _total => items.fold(0, (sum, i) => sum + i.total);
 
+  /// Corrige le prix d'une ligne pour ce devis uniquement (utile notamment
+  /// pour ajuster un prix proposé par l'assistant IA avant d'envoyer).
+  Future<void> _editItemPrice(
+    BuildContext context,
+    DevisItem item,
+    ValueChanged<DevisItem> onAddOrUpdate,
+  ) async {
+    final priceController = TextEditingController(text: item.unitPrice.round().toString());
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Prix de "${item.productName}"',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: priceController,
+                autofocus: true,
+                keyboardType: const TextInputType.numberWithOptions(decimal: false),
+                decoration: const InputDecoration(hintText: 'Prix unitaire (FCFA)'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  final price = double.tryParse(priceController.text.trim());
+                  if (price == null || price < 0) return;
+                  onAddOrUpdate(item.copyWith(unitPrice: price));
+                  Navigator.of(sheetContext).pop();
+                },
+                child: const Text('Enregistrer'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _openAddProductSheet(BuildContext context) async {
     final repo = context.read<AppRepository>();
     final products = repo.productsSortedByName;
@@ -223,6 +278,11 @@ class ItemsStep extends StatelessWidget {
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
+                              ),
+                              IconButton(
+                                onPressed: () => _editItemPrice(context, item, onAddOrUpdate),
+                                icon: const Icon(Icons.edit_rounded, color: AppColors.textMuted),
+                                tooltip: 'Modifier le prix',
                               ),
                               IconButton(
                                 onPressed: () => onRemove(item.productId),

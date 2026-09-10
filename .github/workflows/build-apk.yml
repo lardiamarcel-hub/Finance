@@ -45,7 +45,9 @@ jobs:
         run: flutter pub get
 
       - name: Build release APK
-        run: flutter build apk --release
+        # La clé Gemini (assistant IA) est injectée ici depuis un secret du
+        # dépôt, jamais écrite dans le code source : voir lib/config/ai_config.dart.
+        run: flutter build apk --release --dart-define=GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
 
       - name: Determine version
         id: version

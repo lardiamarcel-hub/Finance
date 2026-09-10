@@ -21,6 +21,11 @@ class HelpScreen extends StatelessWidget {
         text: 'Un tap sur un client existant, ou "Nouveau client" avec juste son nom et son numéro.',
       ),
       (
+        icon: Icons.auto_awesome_rounded,
+        title: "Ou décris ton besoin à l'IA",
+        text: 'Sur l\'étape Client, touche l\'étoile ✨ en haut, écris ta demande en une phrase : l\'IA remplit le client et les articles. Vérifie toujours avant d\'envoyer.',
+      ),
+      (
         icon: Icons.add_shopping_cart_rounded,
         title: 'Ajoute des articles',
         text: 'Choisis dans ta liste de produits, ou crée-en un nouveau. Utilise +/- pour la quantité.',

@@ -16,10 +16,10 @@ class DevisItem {
 
   double get total => unitPrice * quantity;
 
-  DevisItem copyWith({int? quantity}) => DevisItem(
+  DevisItem copyWith({int? quantity, double? unitPrice}) => DevisItem(
         productId: productId,
         productName: productName,
-        unitPrice: unitPrice,
+        unitPrice: unitPrice ?? this.unitPrice,
         quantity: quantity ?? this.quantity,
       );
 

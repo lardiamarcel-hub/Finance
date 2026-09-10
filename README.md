@@ -32,6 +32,9 @@ lib/
   services/
     pdf_service.dart            Génération du PDF (devis/facture + reçu)
     share_service.dart          Envoi WhatsApp / SMS / appel / téléchargement
+    ai_devis_service.dart       Assistant IA (Google Gemini) : texte -> client + articles
+  config/
+    ai_config.dart               Clé IA injectée à la compilation (jamais en clair dans le code)
   utils/
     app_theme.dart               Palette de couleurs et styles
     currency_formatter.dart      Format FCFA ("15 000 FCFA")
@@ -46,6 +49,7 @@ lib/
     home/home_screen.dart               Accueil : devis récents + actions principales
     devis/
       devis_wizard_screen.dart          Parcours en 4 étapes (voir plus bas)
+      ai_devis_sheet.dart                "Décrire avec l'IA" (bouton ✨ à l'étape Client)
       steps/client_step.dart
       steps/items_step.dart
       steps/summary_step.dart
@@ -107,6 +111,31 @@ assets/images/                          Logos/photos (vide pour l'instant)
   code SMS) et synchroniser les données entre plusieurs appareils via
   Firebase — pour l'instant tout reste local à l'appareil, sans connexion à
   faire pour commencer à tester.
+
+## Assistant IA (optionnel)
+
+Depuis l'étape "Client" du parcours de devis, un bouton ✨ ouvre un champ de
+texte libre ("Décrire ton besoin") : l'utilisateur écrit sa demande en une
+phrase ("Devis pour Awa, 2 sacs de riz et une livraison"), et l'IA
+(Google Gemini, offre gratuite) propose un client et une liste d'articles
+avec quantités et prix. Le brouillon atterrit directement sur l'étape
+Récapitulatif : **rien n'est jamais envoyé automatiquement**, l'utilisateur
+vérifie et corrige (y compris les prix, via l'icône crayon sur une ligne)
+avant d'envoyer, comme pour un devis fait à la main.
+
+Détails techniques :
+- La fonction réutilise en priorité les clients et produits déjà connus
+  (correspondance par nom) ; elle ne crée un nouveau client/article que si
+  rien ne correspond.
+- Nécessite une connexion Internet ; le reste de l'app continue de
+  fonctionner 100% hors-ligne comme avant. Si la clé IA n'est pas
+  configurée sur un build donné, le bouton ✨ ne s'affiche simplement pas.
+- La clé API n'est **jamais** écrite dans le code source : elle est injectée
+  au moment de la compilation via `--dart-define=GEMINI_API_KEY=...` (voir
+  `.github/workflows/build-apk.yml`), lue depuis un secret du dépôt GitHub
+  (`Settings → Secrets and variables → Actions → GEMINI_API_KEY`), et lue
+  côté app dans `lib/config/ai_config.dart` via `String.fromEnvironment`.
+  Un build local sans ce secret compile normalement, juste sans le bouton ✨.
 
 ## Ce qui n'est pas encore branché
 
